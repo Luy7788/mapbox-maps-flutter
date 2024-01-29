@@ -744,13 +744,16 @@ extension FLTPointAnnotationOptions {
 
     func toPointAnnotation() -> PointAnnotation {
         var annotation = PointAnnotation(coordinate: convertDictionaryToCLLocationCoordinate2D(dict: self.geometry)!)
+        annotation.iconAnchor = iconAnchor.flatMap(IconAnchor.init)
         if let image {
             annotation.image = .init(image: UIImage(data: image.data, scale: UIScreen.main.scale)!, name: UUID().uuidString)
         }
-        annotation.iconAnchor = iconAnchor.flatMap(IconAnchor.init)
+//        print("===== iconImage -1: \(String(describing: iconImage))")
         if let iconImage {
             annotation.iconImage = iconImage
         }
+//        print("===== iconImage -2: \(String(describing: iconImage))")
+        
         if let iconOffset {
             annotation.iconOffset = iconOffset.map {$0.doubleValue}
         }
@@ -840,14 +843,18 @@ extension FLTPointAnnotationOptions {
 extension FLTPointAnnotation {
 
     func toPointAnnotation() -> PointAnnotation {
-                var annotation = PointAnnotation(id: self.id, coordinate: convertDictionaryToCLLocationCoordinate2D(dict: self.geometry)!)
-        if let image = self.image {
-            annotation.image = .init(image: UIImage(data: image.data, scale: UIScreen.main.scale)!, name: iconImage ?? UUID().uuidString)
-        }
-                annotation.iconAnchor = iconAnchor.flatMap(IconAnchor.init)
+        var annotation = PointAnnotation(id: self.id, coordinate: convertDictionaryToCLLocationCoordinate2D(dict: self.geometry)!)
+        
+        annotation.iconAnchor = iconAnchor.flatMap(IconAnchor.init)
+//        print("===== iconImage 1: \(String(describing: iconImage))")
         if let iconImage {
             annotation.iconImage = iconImage
         }
+//        print("===== iconImage 2: \(String(describing: iconImage))")
+        if let image = self.image {
+            annotation.image = .init(image: UIImage(data: image.data, scale: UIScreen.main.scale)!, name: UUID().uuidString)
+        }
+        
         if let iconOffset {
             annotation.iconOffset = iconOffset.map {$0.doubleValue}
         }
@@ -971,7 +978,9 @@ extension PointAnnotation {
         return FLTPointAnnotation.make(
             withId: id,
             geometry: geometry.toMap(),
+            
             image: image?.image.pngData().map(FlutterStandardTypedData.init(bytes:)),
+            
             iconAnchor: iconAnchor,
             iconImage: iconImage,
             iconOffset: iconOffset,
